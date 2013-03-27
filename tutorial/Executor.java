@@ -20,17 +20,11 @@ public class Executor
     implements Watcher, Runnable, DataMonitor.DataMonitorListener
 {
     String znode;
-
     DataMonitor dm;
-
     ZooKeeper zk;
-
     String filename;
-
     String exec[];
-
     Process child;
-
     public Executor(String hostPort, String znode, String filename,
                     String exec[]) throws KeeperException, IOException {
         this.filename = filename;

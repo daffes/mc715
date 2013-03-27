@@ -13,19 +13,12 @@ import org.apache.zookeeper.KeeperException.Code;
 import org.apache.zookeeper.data.Stat;
 
 public class DataMonitor implements Watcher, StatCallback {
-
     ZooKeeper zk;
-
     String znode;
-
     Watcher chainedWatcher;
-
     boolean dead;
-
     DataMonitorListener listener;
-
     byte prevData[];
-
     public DataMonitor(ZooKeeper zk, String znode, Watcher chainedWatcher,
                        DataMonitorListener listener) {
         this.zk = zk;
