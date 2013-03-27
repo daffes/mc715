@@ -13,7 +13,7 @@ import org.apache.zookeeper.ZooKeeper;
 import org.apache.zookeeper.ZooDefs.Ids;
 import org.apache.zookeeper.data.Stat;
 
-public class SyncPrimitive implements Watcher {
+public class SyncPrimitiveFixed implements Watcher {
 
     static ZooKeeper zk = null;
     static Integer mutex;
@@ -30,7 +30,7 @@ public class SyncPrimitive implements Watcher {
         }
     }
 
-    SyncPrimitive(String address) {
+    SyncPrimitiveFixed(String address) {
         if(zk == null){
             try {
                 System.out.println("Starting ZK:");
@@ -55,7 +55,7 @@ public class SyncPrimitive implements Watcher {
     /**
      * Barrier
      */
-    static public class Barrier extends SyncPrimitive {
+    static public class Barrier extends SyncPrimitiveFixed {
         int size;
         String name;
 
@@ -118,9 +118,13 @@ public class SyncPrimitive implements Watcher {
                 synchronized (mutex) {
                     List<String> list = zk.getChildren(root, true);
                     log("Verificando se posso entrar, tamanho da fila = " + list.size());
-                    if (list.size() < size) {
+                    if (zk.exists("/ready", true) == null && list.size() < size) {
                         mutex.wait();
                     } else {
+                        try {
+                            zk.create("/ready", new byte[0], Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
+                        } catch (KeeperException e){ 
+                        }
                         return true;
                     }
                 }
@@ -148,6 +152,9 @@ public class SyncPrimitive implements Watcher {
                     if (list.size() > 0) {
                         mutex.wait();
                     } else {
+                        try {
+                            zk.delete("/ready", 0);
+                        } catch (KeeperException e){ }
                         return true;
                     }
                 }
