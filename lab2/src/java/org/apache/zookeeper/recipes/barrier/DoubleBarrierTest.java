@@ -61,8 +61,13 @@ public class DoubleBarrierTest {
 
     void questions() {
         Scanner scanner = new Scanner(System.in);
-        print("Quando eh 2 + 2?");
+        print("Quanto eh 2 + 2?");
         Integer res = scanner.nextInt();
+        if (res == 4) {
+            score++;
+        }
+        print("Quanto eh 2 * 2?");
+        res = scanner.nextInt();
         if (res == 4) {
             score++;
         }
@@ -79,7 +84,7 @@ public class DoubleBarrierTest {
         }
         print("Bem vindo aluno " + name);
         print("Aguardando que todos os alunos loguem");
-        DoubleBarrier b = new DoubleBarrier(this.zk, "/b-prova", 2);
+        DoubleBarrier b = new DoubleBarrier(this.zk, "/b-prova", 3);
         try {
             b.enter();
         } catch (Exception e) {
@@ -96,7 +101,7 @@ public class DoubleBarrierTest {
         }
         try {
             zk.create("/notas/" + nodeName, score.toString().getBytes(), Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
-            SimpleBarrier bsimple = new SimpleBarrier(this.zk, "/b-notas", 2);
+            SimpleBarrier bsimple = new SimpleBarrier(this.zk, "/b-notas", 3);
             bsimple.barrier_wait();
             List<String> childNames = zk.getChildren("/notas", false);
             for (String child : childNames) {
