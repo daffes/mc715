@@ -16,7 +16,8 @@
  * limitations under the License.
  */
 
-//package org.apache.zookeeper.recipes.barrier;
+import org.apache.zookeeper.recipes.barrier.DoubleBarrier;
+import org.apache.zookeeper.recipes.barrier.SimpleBarrier;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -24,6 +25,7 @@ import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.util.List;
 import java.util.Random;
+import java.util.Scanner;
 
 import org.apache.zookeeper.ZooKeeper;
 import org.apache.zookeeper.CreateMode;
@@ -34,11 +36,8 @@ import org.apache.zookeeper.ZooKeeper;
 import org.apache.zookeeper.ZooDefs.Ids;
 import org.apache.zookeeper.data.Stat;
 
-import java.util.Scanner;
-
 public class DoubleBarrierTest {
     private ZooKeeper zk;
-    private String name = "TODO";
     private Integer score = new Integer(0);
 
     private class DummyWatcher implements Watcher {
@@ -73,7 +72,7 @@ public class DoubleBarrierTest {
         }
     }
 
-    private void go() {
+    private void go(Integer qtd) {
         Integer pos = new Integer(0);
 
         String nodeName = null;
@@ -82,9 +81,9 @@ public class DoubleBarrierTest {
         } catch (Exception e) {
 
         }
-        print("Bem vindo aluno " + name);
+        print("Bem vindo aluno " + nodeName);
         print("Aguardando que todos os alunos loguem");
-        DoubleBarrier b = new DoubleBarrier(this.zk, "/b-prova", 3);
+        DoubleBarrier b = new DoubleBarrier(this.zk, "/b-prova", qtd, true);
         try {
             b.enter();
         } catch (Exception e) {
@@ -101,7 +100,7 @@ public class DoubleBarrierTest {
         }
         try {
             zk.create("/notas/" + nodeName, score.toString().getBytes(), Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
-            SimpleBarrier bsimple = new SimpleBarrier(this.zk, "/b-notas", 3);
+            SimpleBarrier bsimple = new SimpleBarrier(this.zk, "/b-notas", qtd);
             bsimple.barrier_wait();
             List<String> childNames = zk.getChildren("/notas", false);
             for (String child : childNames) {
@@ -129,6 +128,7 @@ public class DoubleBarrierTest {
 
     public static void main(String args[]) {
         DoubleBarrierTest db = new DoubleBarrierTest(args[0]);
-        db.go();
+        db.go(Integer.parseInt(args[1]));
+        db.go(Integer.parseInt(args[1]));
     }
 }

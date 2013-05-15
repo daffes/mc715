@@ -21,6 +21,7 @@ package org.apache.zookeeper.recipes.barrier;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.List;
+import java.util.Scanner;
 
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
@@ -37,12 +38,18 @@ public class DoubleBarrier {
     private Integer mutex;
     private BarrierWatcher watcher;
     private int size;
+    private boolean debug;
 
     public DoubleBarrier(ZooKeeper zk, String dir, int size) {
+        this(zk, dir, size, false);
+    }
+
+    public DoubleBarrier(ZooKeeper zk, String dir, int size, boolean debug) {
         this.zk = zk;
         this.dir = dir;
         this.size = size;
         this.mutex = new Integer(-1);
+        this.debug = debug;
         this.watcher = new BarrierWatcher();
         
         try {
@@ -113,8 +120,15 @@ public class DoubleBarrier {
         }
         while (true) {
             synchronized (mutex) {
+                if (this.debug) {
+                    System.out.println("De um enter para verificarmos se podemos sair da barreira");
+                    new java.util.Scanner(System.in).nextLine();
+                }
                 List<String> list = zk.getChildren(dir, watcher);
-                if (list.size() > 1) {
+                if (this.debug) {
+                    System.out.println("tamanho: " + (new Integer(list.size()).toString()));
+                }
+                if (list.size() > 1 && zk.exists(dir + "/ready", watcher) != null) {
                     watcher.await();
                 } else {
                     try {
