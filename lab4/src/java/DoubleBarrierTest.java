@@ -83,7 +83,7 @@ public class DoubleBarrierTest {
         }
         print("Bem vindo aluno " + nodeName);
         print("Aguardando que todos os alunos loguem");
-        DoubleBarrier b = new DoubleBarrier(this.zk, "/b-prova", qtd, false);
+        DoubleBarrier b = new DoubleBarrier(this.zk, "/b-prova", qtd);
         try {
             b.enter();
         } catch (Exception e) {

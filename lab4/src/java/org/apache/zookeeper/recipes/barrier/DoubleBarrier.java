@@ -44,19 +44,13 @@ public class DoubleBarrier {
     private Integer mutex;
     private BarrierWatcher watcher;
     private int size;
-    private boolean debug;
     private long maxId;
 
     public DoubleBarrier(ZooKeeper zk, String dir, int size) {
-        this(zk, dir, size, false);
-    }
-
-    public DoubleBarrier(ZooKeeper zk, String dir, int size, boolean debug) {
         this.zk = zk;
         this.dir = dir;
         this.size = size;
         this.mutex = new Integer(-1);
-        this.debug = debug;
         this.watcher = new BarrierWatcher();
         this.readyNode = null;
 
@@ -96,7 +90,7 @@ public class DoubleBarrier {
         }
     }
 
-    public boolean enter() throws KeeperException, InterruptedException{
+    public boolean enter() throws KeeperException, InterruptedException {
         this.myId = zk.create(dir + "/" + prefix, new byte[0], Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL_SEQUENTIAL);
         this.myId = this.myId.substring((dir + "/" + prefix).length());
 
@@ -149,10 +143,6 @@ public class DoubleBarrier {
         }
         while (true) {
             synchronized (mutex) {
-                if (this.debug) {
-                    System.out.println("De um enter para verificarmos se podemos sair da barreira");
-                    new java.util.Scanner(System.in).nextLine();
-                }
                 int cnt = 0;
 
                 List<String> list = zk.getChildren(dir, watcher);
