@@ -117,7 +117,7 @@ public class DoubleBarrier {
                     this.maxId = new Long(list.get(size - 1).substring(this.prefix.length()));
                     try {
                         this.readyNode = "r-" + (new Long(maxId)).toString();
-                        zk.create(dir + "/" + this.readyNode, new byte[0], Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL);
+                        zk.create(dir + "/" + this.readyNode, new byte[0], Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
                     } catch (KeeperException e){ 
                         // TODO
                     }
