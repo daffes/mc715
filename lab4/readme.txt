@@ -27,7 +27,7 @@ Usage:
 
 Known problems:
 - If a barrier is (re)used a massive amount of times (around 1 billion elements joining), the counter will overflow. This will only create problems if your implementation needs the restricted behavior. In this case, it's very possible that a starvation scenario occurs, also, some elements may break the restriction and just join the barrier. A possible solution is to schedule the deletion of the root node of the barrier in a cronjob.
-- If all elements inside a barrier looses its connection with the zookeeper a deadlock situation will occur.
+- If all elements inside a barrier loose their connections with the zookeeper a deadlock situation will occur, in the sense that in the rescrited behavior the next group will not be allowed to pass.
 
 Bugs, Feedback, Contribution:
 - Check our git repository on https://github.com/daffes/mc715/
